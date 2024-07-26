@@ -1,8 +1,42 @@
 ---
-- name: Create test.txt file
-  hosts: all
+- name: Add hosts and groups to inventory
+  hosts: localhost
+  gather_facts: no
   tasks:
-    - name: Create an empty test.txt file
-      file:
-        path: /home/furkanozgul/test.txt
-        state: touch
+    - name: Add hosts
+      awx.awx.inventory_host:
+        name: "{{ item.name }}"
+        inventory: "Your Inventory Name"
+        state: present
+        description: "{{ item.description }}"
+        enabled: "{{ item.enabled }}"
+        variables: "{{ item.variables | from_yaml }}"
+      loop:
+        - name: "test1"
+          description: "test1"
+          enabled: true
+          variables: |
+            ansible_host: 10.1.11.104
+            ansible_user: furkanozgul
+        - name: "test2"
+          description: "test2"
+          enabled: true
+          variables: |
+            ansible_host: 10.1.11.107
+            ansible_user: furkanozgul
+
+    - name: Add group
+      awx.awx.inventory_group:
+        name: "testgroup"
+        inventory: "Your Inventory Name"
+        state: present
+        description: "A sample group"
+
+    - name: Add hosts to group
+      awx.awx.group_host:
+        inventory: "Your Inventory Name"
+        group: "testgroup"
+        host: "{{ item }}"
+      loop:
+        - "test1"
+        - "test2"
