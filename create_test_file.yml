@@ -1,9 +1,8 @@
 ---
-- name: Create example file on remote hosts
+- name: Create a test file
   hosts: testgroup
-  become: yes
   tasks:
-    - name: Create a test file
-      ansible.builtin.file:
+    - name: Create a file called test.txt
+      file:
         path: /tmp/test.txt
         state: touch
