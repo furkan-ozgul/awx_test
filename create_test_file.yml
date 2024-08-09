@@ -1,8 +1,16 @@
 ---
-- name: Create a test file
-  hosts: testgroup
+- name: Örnek SSH bağlantısı
+  hosts: all
   tasks:
-    - name: Create a file called test.txt
+    - name: Hedef makinaya ping atma
+      ping:
+
+    - name: Dosya oluşturma
       file:
-        path: /tmp/test.txt
+        path: /tmp/ansible_test.txt
         state: touch
+
+    - name: Metin dosyasına veri yazma
+      copy:
+        content: "Merhaba, bu bir test dosyasıdır."
+        dest: /tmp/ansible_test.txt
