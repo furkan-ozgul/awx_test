@@ -1,5 +1,6 @@
 - name: Örnek SSH bağlantısı
   hosts: all
+  become: yes
   tasks:
     - name: Hedef makinaya ping atma
       ping:
