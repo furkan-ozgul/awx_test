@@ -1,16 +1,15 @@
----
 - name: Örnek SSH bağlantısı
   hosts: all
   tasks:
     - name: Hedef makinaya ping atma
       ping:
 
-    - name: Dosya oluşturma
-      file:
-        path: /tmp/ansible_test.txt
-        state: touch
+    - name: Paket listelerini güncelleme
+      apt:
+        update_cache: yes
 
-    - name: Metin dosyasına veri yazma
-      copy:
-        content: "Merhaba, bu bir test dosyasıdır."
-        dest: /tmp/ansible_test.txt
+    - name: Paketleri yükseltme
+      apt:
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
