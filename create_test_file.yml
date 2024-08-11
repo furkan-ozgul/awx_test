@@ -4,7 +4,7 @@
   become_method: sudo
   become_user: root
   vars:
-    ansible_become_pass: "YourSudoPasswordHere"
+    ansible_become_pass: "Anka1453+"
   tasks:
     - name: Hedef makinaya ping atma
       ping:
