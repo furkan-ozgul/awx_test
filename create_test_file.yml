@@ -1,6 +1,10 @@
 - name: Örnek SSH bağlantısı
   hosts: all
   become: yes
+  become_method: sudo
+  become_user: root
+  vars:
+    ansible_become_pass: "YourSudoPasswordHere"
   tasks:
     - name: Hedef makinaya ping atma
       ping:
