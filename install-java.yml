@@ -4,8 +4,6 @@
   become: yes
   become_method: sudo
   become_user: root
-  vars:
-    ansible_become_pass: "Fo2024??"
   tasks:
     - name: Hedef makinaya ping atma
       ping:
