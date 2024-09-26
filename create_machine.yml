@@ -1,0 +1,64 @@
+---
+- name: Upload ISO to VMware ESXi and create a VM
+  hosts: localhost
+  gather_facts: no
+  vars:
+    esxi_host: "{{ esxi_host }}"  # ESXi veya vCenter sunucu IP'si veya domain adı
+    esxi_user: "{{ esxi_user }}"  # ESXi kullanıcı adı
+    esxi_password: "{{ esxi_password }}"  # ESXi şifresi
+    datastore: "{{ datastore }}"  # ISO dosyasının ve VM'in depolanacağı datastore
+    iso_path: "{{ iso_path }}"  # Yerel ISO dosyasının yolu
+    remote_iso_path: "[{{ datastore }}] {{ iso_name }}"  # ESXi'deki hedef yol
+
+    # VM bilgileri için değişkenler
+    vm_name_prefix: "{{ vm_name_prefix }}"  # VM adı ön eki
+    vm_version: "{{ vm_version }}"  # VM sürüm bilgisi
+    vm_type: "{{ vm_type }}"  # VM türü
+
+    vm_memory: "{{ vm_memory }}"  # RAM miktarı (MB)
+    vm_cpus: "{{ vm_cpus }}"  # CPU çekirdek sayısı
+    vm_disk_size: "{{ vm_disk_size }}"  # Disk boyutu (GB)
+    vm_network: "{{ vm_network }}"  # VM'in bağlanacağı ağ
+    guest_id: "{{ guest_id }}"  # VMware Guest ID
+
+  tasks:
+    - name: Generate VM name dynamically
+      set_fact:
+        vm_name: "{{ vm_name_prefix }}-{{ vm_version }}-{{ vm_type }}"
+
+    - name: Upload ISO to datastore
+      community.vmware.vmware_content_deploy_ovf:
+        hostname: "{{ esxi_host }}"
+        username: "{{ esxi_user }}"
+        password: "{{ esxi_password }}"
+        validate_certs: no
+        source: "{{ iso_path }}"
+        datastore: "{{ datastore }}"
+        deployment_name: "{{ iso_name }}"
+        state: "present"
+
+    - name: Create a VM on ESXi
+      community.vmware.vmware_guest:
+        hostname: "{{ esxi_host }}"
+        username: "{{ esxi_user }}"
+        password: "{{ esxi_password }}"
+        validate_certs: no
+        datacenter: "ha-datacenter"
+        cluster: "ClusterName"  # Eğer bir cluster kullanıyorsanız, yoksa kaldırabilirsiniz
+        name: "{{ vm_name }}"
+        folder: "{{ vm_folder | default('') }}"  # VM'in bulunacağı dizin
+        guest_id: "{{ guest_id }}"
+        datastore: "{{ datastore }}"
+        networks:
+          - name: "{{ vm_network }}"
+        hardware:
+          memory_mb: "{{ vm_memory }}"
+          num_cpus: "{{ vm_cpus }}"
+          disk:
+            - size_gb: "{{ vm_disk_size }}"
+              datastore: "{{ datastore }}"
+        cdrom:
+          type: iso
+          iso_path: "{{ remote_iso_path }}"
+        state: poweredon
+
