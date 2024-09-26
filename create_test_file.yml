@@ -1,10 +1,11 @@
-- name: Örnek SSH bağlantısı
+---
+- name: SSH ile Java 17 LTS Kurulumu
   hosts: all
   become: yes
   become_method: sudo
   become_user: root
   vars:
-    ansible_become_pass: "Anka1453+"
+    ansible_become_pass: "Fo2024??"
   tasks:
     - name: Hedef makinaya ping atma
       ping:
@@ -13,8 +14,15 @@
       apt:
         update_cache: yes
 
-    - name: Paketleri yükseltme
+    - name: Java 17 LTS yükle
       apt:
-        upgrade: dist
-        autoremove: yes
-        autoclean: yes
+        name: openjdk-17-jdk
+        state: present
+
+    - name: Java versiyonunu kontrol et
+      command: java -version
+      register: java_version_output
+
+    - name: Kurulumun doğru olduğunu doğrula
+      debug:
+        msg: "{{ java_version_output.stdout }}"
