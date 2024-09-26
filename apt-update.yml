@@ -1,0 +1,20 @@
+- name: Örnek SSH bağlantısı
+  hosts: all
+  become: yes
+  become_method: sudo
+  become_user: root
+  vars:
+    ansible_become_pass: "Fo2024??"
+  tasks:
+    - name: Hedef makinaya ping atma
+      ping:
+
+    - name: Paket listelerini güncelleme
+      apt:
+        update_cache: yes
+
+    - name: Paketleri yükseltme
+      apt:
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
